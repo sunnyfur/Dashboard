@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/main.css" />
+
+    <link rel="stylesheet" href="/node_modules/flatpickr/dist/flatpickr.min.css">
+
+    <title>Главная</title>
+</head>
+
+<body class="body">
+
+    <main class="dashboard">
+        <h1>Dashboard</h1>
+        <header class="date__wrapper">
+            <div class="date__group">
+                <p class="date__day">Среда,</p>
+                <p class="date__today">30 июня 2022</p>
+            </div>
+
+            <input class="dateInput">
+        </header>
+        <div class="chart chart_line">
+            <canvas id="myLineChart"></canvas>
+        </div>
+        <div class="chart">
+            <canvas id="myChart"></canvas>
+        </div>
+    </main>
+
+    <script src="js/tooltip.js"></script>
+    <script src="js/task.js"></script>
+    <script src="bundle.js"></script>
+</body>
+
+</html>

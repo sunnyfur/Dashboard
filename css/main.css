@@ -1,0 +1,116 @@
+.body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.dashboard {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: rgba(191, 202, 223, 0.315);
+  width: 70vw;
+}
+
+.chart {
+  width: 60%;
+  padding: 50px;
+  border-radius: 10px;
+  background-color: white;
+  margin: 50px;
+}
+
+.testCanvas {
+  width: 800px;
+  height: 400px;
+  background-color: blueviolet;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.tooltip {
+  border-radius: 20px;
+  height: 150%;
+  background-color: rgba(255, 255, 255, 0.06);
+  -webkit-box-shadow: 0px 4px 23px -2px rgba(0, 0, 0, 0.2);
+          box-shadow: 0px 4px 23px -2px rgba(0, 0, 0, 0.2);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: reverse;
+      -ms-flex-direction: column-reverse;
+          flex-direction: column-reverse;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.tooltip__text {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin: 5px;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.tooltip__subheader {
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+.dateInput {
+  border: 0;
+  text-align: center;
+  color: blueviolet;
+}
+
+.date__wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.date__group {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-column-gap: 10px;
+          column-gap: 10px;
+}
+
+.date__day {
+  color: darkorchid;
+  font-weight: 600;
+}
+
+.date__today {
+  color: darkgrey;
+}
+/*# sourceMappingURL=main.css.map */

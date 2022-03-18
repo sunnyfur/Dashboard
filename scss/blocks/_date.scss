@@ -1,0 +1,19 @@
+.date__wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.date__group {
+    display: flex;
+    column-gap: 10px;
+}
+
+.date__day {
+    color: darkorchid;
+    font-weight: 600;
+}
+
+.date__today {
+    color: darkgrey;
+}
