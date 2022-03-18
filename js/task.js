@@ -56,28 +56,3 @@
 // listOfTasks.push(new Task('18.03.22', 40, 10));
 // listOfTasks.push(new Task('19.03.22', 20, 10));
 // listOfTasks.push(new Task('20.03.22', 30, 20));
-
-
-
-
-
-
-
-
-
-
-
-
-// console.log(Task.GetListOfDates(listOfTasks));
-// const array = ["apple", "star2", "shamrock"];
-// // const array = ["apple", "star", "2"];
-// const newArr = [];
-// const newArr = array.reduce((newArr, curr) => newArr.concat([curr]), []);
-
-// array.forEach(x => newArr.unshift(x));
-// newArr.reverse();
-
-
-// array[0] = "dgdfg"
-// // for (let i; i < array.length; i++) newArr.push(array[i]);
-// console.log(newArr);
