@@ -3,88 +3,26 @@ const moment = require("moment");
 require('moment/locale/ru');
 let ru = moment.locale('ru');
 
+
 const Chart = require("chart.js");
-// const datePicker = require("js-datepicker");
 const flatpickr = require("flatpickr");
 require('flatpickr/dist/l10n/ru.js');
 
-const getDay = (date) => {
-    return moment(date, 'DD.MM.YY').format("DD");
-};
+
 const getNameDay = (date) => {
     date = moment(date, 'DD.MM.YY').format("dddd");
 
     return date.charAt(0).toUpperCase() + date.slice(1)
 }
 
-
-class Task {
-    constructor(date, countNew, countInProcess) {
-        this.date = date;
-        this.countNew = countNew;
-        this.countInProcess = countInProcess;
-    }
-    static GetListOfDates(listOfTasks, dateFrom, dateTo) {
-
-        return Task.GetListOfCurrent(listOfTasks, dateFrom, dateTo).map(elem => elem.date);
-    }
-    static GetListOfNews(listOfTasks, dateFrom, dateTo) {
-        return Task.GetListOfCurrent(listOfTasks, dateFrom, dateTo).map(elem => elem.countNew);
-    }
-    static GetListOfInProcess(listOfTasks, dateFrom, dateTo) {
-        return Task.GetListOfCurrent(listOfTasks, dateFrom, dateTo).map(elem => [
-            elem.countNew, elem.countInProcess + elem.countNew
-        ]);
-    }
-    static GetListOfAll(listOfTasks, dateFrom, dateTo) {
-        return Task.GetListOfCurrent(listOfTasks, dateFrom, dateTo).map(elem =>
-            elem.countInProcess + elem.countNew);
-    }
-
-    static GetListOfCurrent(listOfTasks, dateFrom, dateTo) {
-        if (!dateTo) {
-            if (!dateFrom)
-                return listOfTasks.slice(-7);
-            else
-                // console.log(moment('19.03.22', 'DD.MM.YY').isSameorAfter(moment(dateFrom, 'DD.MM.YY')));
-                return listOfTasks.filter(elem => moment(elem.date, 'DD.MM.YY').isAfter(moment(dateFrom, 'DD.MM.YY')));
-        }
-        return listOfTasks.filter(elem => moment(elem.date, 'DD.MM.YY').isBetween(moment(dateFrom, 'DD.MM.YY'), moment(dateTo, 'DD.MM.YY'), undefined, '[]'));
-    }
-
-
-}
-
-const listOfTasks = [];
-listOfTasks.push(new Task('28.02.22', 10, 0));
-listOfTasks.push(new Task('01.03.22', 20, 30));
-listOfTasks.push(new Task('02.03.22', 50, 10));
-listOfTasks.push(new Task('03.03.22', 20, 20));
-listOfTasks.push(new Task('04.03.22', 40, 10));
-listOfTasks.push(new Task('05.03.22', 20, 10));
-listOfTasks.push(new Task('06.03.22', 30, 20));
-listOfTasks.push(new Task('07.03.22', 10, 0));
-listOfTasks.push(new Task('08.03.22', 20, 30));
-listOfTasks.push(new Task('09.03.22', 50, 10));
-listOfTasks.push(new Task('10.03.22', 20, 20));
-listOfTasks.push(new Task('11.03.22', 40, 10));
-listOfTasks.push(new Task('12.03.22', 20, 10));
-listOfTasks.push(new Task('13.03.22', 30, 20));
-listOfTasks.push(new Task('14.03.22', 10, 0));
-listOfTasks.push(new Task('15.03.22', 20, 30));
-listOfTasks.push(new Task('16.03.22', 50, 10));
-listOfTasks.push(new Task('17.03.22', 20, 20));
-listOfTasks.push(new Task('18.03.22', 40, 10));
-listOfTasks.push(new Task('19.03.22', 20, 10));
-listOfTasks.push(new Task('20.03.22', 30, 20));
-
+const task = require('./task.js');
+const listOfTasks = task.listOfTasks;
+const tooltipModule = require('./tooltip.js');
 
 let dateFrom = moment().subtract(7, 'd');
-// let dateTo;
 let dateTo = moment();
 
 const ChangeCharts = (selectedDates, dateStr, instance) => {
-    // console.log(selectedDates);
     dateFrom = selectedDates[0];
     dateTo = selectedDates[1];
 
@@ -93,12 +31,9 @@ const ChangeCharts = (selectedDates, dateStr, instance) => {
     triggerTooltip(myChartLine)
 }
 
-// console.log(moment(listOfTasks[0].date, 'DD.MM.YY'));
 const picker = flatpickr(".dateInput", {
     mode: "range",
     locale: "ru",
-    // minDate: moment(listOfTasks[0].date, 'DD.MM.YY').format("YYYY-MM-DD"),
-    // maxDate: 'today',
     defaultDate: [dateFrom.format("DD.MM.YY"), dateTo.format("DD.MM.YY")],
     dateFormat: "d.m.Y",
 
@@ -114,9 +49,9 @@ const ctxLine = document.getElementById('myLineChart').getContext('2d');
 
 
 
-const labels = Task.GetListOfDates(listOfTasks, dateFrom, dateTo);
-const dataNews = Task.GetListOfNews(listOfTasks, dateFrom, dateTo);
-const dataInProcess = Task.GetListOfInProcess(listOfTasks, dateFrom, dateTo);
+const labels = task.Task.GetListOfDates(listOfTasks, dateFrom, dateTo);
+const dataNews = task.Task.GetListOfNews(listOfTasks, dateFrom, dateTo);
+const dataInProcess = task.Task.GetListOfInProcess(listOfTasks, dateFrom, dateTo);
 
 
 
@@ -126,7 +61,6 @@ const data = {
     datasets: [{
             label: 'Новая задача',
             barThickness: 45,
-            // data: dataNews,
             backgroundColor: 'rgba(138, 43, 226, 1)',
             borderRadius: 5,
 
@@ -134,7 +68,6 @@ const data = {
         {
             label: 'В процессе',
             barThickness: 45,
-            // data: dataInProcess,
             backgroundColor: 'rgba(255, 180, 180, 1)',
             borderRadius: 5,
 
@@ -144,7 +77,6 @@ const data = {
 };
 
 const myChart = new Chart(ctx, {
-
     type: 'bar',
     data: data,
     options: {
@@ -197,12 +129,234 @@ const myChart = new Chart(ctx, {
 });
 
 const refreshDataBar = (listOfTasks, dateFrom, dateTo) => {
-    myChart.data.labels = Task.GetListOfDates(listOfTasks, dateFrom, dateTo);
-    myChart.data.datasets[0].data = Task.GetListOfNews(listOfTasks, dateFrom, dateTo);
-    myChart.data.datasets[1].data = Task.GetListOfInProcess(listOfTasks, dateFrom, dateTo);
+    myChart.data.labels = task.Task.GetListOfDates(listOfTasks, dateFrom, dateTo);
+    myChart.data.datasets[0].data = task.Task.GetListOfNews(listOfTasks, dateFrom, dateTo);
+    myChart.data.datasets[1].data = task.Task.GetListOfInProcess(listOfTasks, dateFrom, dateTo);
     myChart.update();
 }
 refreshDataBar(listOfTasks, dateFrom, dateTo);
+
+
+const grad = document.createElement("canvas").getContext('2d');
+let ct = grad.createLinearGradient(0, 0, 0, 400);
+ct.addColorStop(0, 'rgba(138, 43, 226,1)');
+ct.addColorStop(1, 'rgba(138,43,226,0)');
+
+const dataLine = {
+    labels: labels,
+    datasets: [{
+        label: 'Задачи',
+        fill: false,
+        borderColor: 'rgb(138, 43, 226)',
+        backgroundColor: ct,
+        // cubicInterpolationMode: 'monotone',
+        fill: true,
+        tension: 0.4,
+        type: 'line',
+        pointStyle: "circle",
+        pointRadius: 0,
+        pointBorderWidth: 25,
+        pointHoverBorderWidth: 50,
+        pointHoverRadius: 10,
+        pointBackgroundColor: 'rgba(255, 180, 180, 1)',
+        pointBorderColor: 'rgba(255, 255, 255, 0.5)',
+    }]
+};
+
+const myChartLine = new Chart(ctxLine, {
+    type: 'bar',
+    data: dataLine,
+    options: {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Недельная Активность',
+                align: 'start',
+                font: {
+                    size: 30
+                },
+                padding: {
+                    top: 20,
+                    left: 0,
+                    right: 0,
+                    bottom: 50
+                }
+            },
+            legend: {
+                display: false,
+
+            },
+            tooltip: {
+                enabled: false,
+                // position: 'nearest',
+                external: tooltipModule.externalTooltipHandler
+            }
+        },
+
+        responsive: true,
+        interaction: {
+            intersect: false,
+            mode: 'index',
+        },
+        scales: {
+            x: {
+
+                stacked: true,
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    // Include a dollar sign in the ticks
+                    callback: function (value, index, values) {
+                        return getNameDay(this.getLabelForValue(value));
+                    }
+                }
+            },
+            y: {
+                display: false,
+                min: -10,
+                max: 100,
+            }
+        }
+    }
+})
+
+const refreshDataLine = (listOfTasks, dateFrom, dateTo) => {
+    myChartLine.data.labels = task.Task.GetListOfDates(listOfTasks, dateFrom, dateTo);
+    myChartLine.data.datasets[0].data = task.Task.GetListOfAll(listOfTasks, dateFrom, dateTo);
+    myChartLine.update();
+}
+refreshDataLine(listOfTasks, dateFrom, dateTo);
+
+
+const triggerTooltip = (chart) => {
+    chart.setActiveElements([{
+        datasetIndex: 0,
+        index: Math.floor(moment(dateTo).diff(dateFrom, "days") / 2) || 0,
+    }, ]);
+
+    chart.tooltip.setActiveElements([{
+        datasetIndex: 0,
+        index: Math.floor(moment(dateTo).diff(dateFrom, "days") / 2) || 0,
+    }, ]);
+    chart.update();
+};
+
+triggerTooltip(myChartLine);
+
+
+
+document.querySelector('.chart_line').addEventListener("mouseout", (e) => {
+    myChartLine.update();
+    triggerTooltip(myChartLine);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    document.querySelector(".date__day").innerHTML = getNameDay(moment());
+    document.querySelector(".date__today").innerHTML = moment().format("DD MMMM YYYY");
+
+});
+},{"./task.js":2,"./tooltip.js":3,"chart.js":4,"flatpickr":5,"flatpickr/dist/l10n/ru.js":6,"moment":8,"moment/locale/ru":7}],2:[function(require,module,exports){
+const moment = require("moment");
+require('moment/locale/ru');
+let ru = moment.locale('ru');
+// module.exports = func = () => {
+class Task {
+    constructor(date, countNew, countInProcess) {
+        this.date = date;
+        this.countNew = countNew;
+        this.countInProcess = countInProcess;
+    }
+    static GetListOfDates(listOfTasks, dateFrom, dateTo) {
+
+        return Task.GetListOfCurrent(listOfTasks, dateFrom, dateTo).map(elem => elem.date);
+    }
+    static GetListOfNews(listOfTasks, dateFrom, dateTo) {
+        return Task.GetListOfCurrent(listOfTasks, dateFrom, dateTo).map(elem => elem.countNew);
+    }
+    static GetListOfInProcess(listOfTasks, dateFrom, dateTo) {
+        return Task.GetListOfCurrent(listOfTasks, dateFrom, dateTo).map(elem => [
+            elem.countNew, elem.countInProcess + elem.countNew
+        ]);
+    }
+    static GetListOfAll(listOfTasks, dateFrom, dateTo) {
+        return Task.GetListOfCurrent(listOfTasks, dateFrom, dateTo).map(elem =>
+            elem.countInProcess + elem.countNew);
+    }
+
+    static GetListOfCurrent(listOfTasks, dateFrom, dateTo) {
+        if (!dateTo) {
+            if (!dateFrom)
+                return listOfTasks.slice(-7);
+            else
+                return listOfTasks.filter(elem => moment(elem.date, 'DD.MM.YY').isAfter(moment(dateFrom, 'DD.MM.YY')));
+        }
+        return listOfTasks.filter(elem => moment(elem.date, 'DD.MM.YY').isBetween(moment(dateFrom, 'DD.MM.YY'), moment(dateTo, 'DD.MM.YY'), undefined, '[]'));
+    }
+
+
+}
+
+const listOfTasks = [];
+listOfTasks.push(new Task('28.02.22', 10, 0));
+listOfTasks.push(new Task('01.03.22', 20, 30));
+listOfTasks.push(new Task('02.03.22', 50, 10));
+listOfTasks.push(new Task('03.03.22', 20, 20));
+listOfTasks.push(new Task('04.03.22', 40, 10));
+listOfTasks.push(new Task('05.03.22', 20, 10));
+listOfTasks.push(new Task('06.03.22', 30, 20));
+listOfTasks.push(new Task('07.03.22', 10, 0));
+listOfTasks.push(new Task('08.03.22', 20, 30));
+listOfTasks.push(new Task('09.03.22', 50, 10));
+listOfTasks.push(new Task('10.03.22', 20, 20));
+listOfTasks.push(new Task('11.03.22', 40, 10));
+listOfTasks.push(new Task('12.03.22', 20, 10));
+listOfTasks.push(new Task('13.03.22', 30, 20));
+listOfTasks.push(new Task('14.03.22', 10, 0));
+listOfTasks.push(new Task('15.03.22', 20, 30));
+listOfTasks.push(new Task('16.03.22', 50, 10));
+listOfTasks.push(new Task('17.03.22', 20, 20));
+listOfTasks.push(new Task('18.03.22', 40, 10));
+listOfTasks.push(new Task('19.03.22', 20, 10));
+listOfTasks.push(new Task('20.03.22', 30, 20));
+
+
+module.exports = {
+    Task,
+    listOfTasks
+}
+},{"moment":8,"moment/locale/ru":7}],3:[function(require,module,exports){
+const moment = require("moment");
+require('moment/locale/ru');
+let ru = moment.locale('ru');
+const getDay = (date) => {
+    return moment(date, 'DD.MM.YY').format("DD");
+};
+const getOrCreateTooltip = (chart) => {
+    let tooltipEl = chart.canvas.parentNode.querySelector('div');
+
+
+    if (!tooltipEl) {
+        tooltipEl = document.createElement('div');
+
+        tooltipEl.style.pointerEvents = 'none';
+        tooltipEl.style.position = 'absolute';
+
+        tooltipEl.style.transform = 'translate(-50%, 50%)';
+
+        tooltipEl.style.transition = 'all .1s ease';
+
+        const table = document.createElement('div');
+        table.classList.add("tooltip");
+        table.style.margin = '0px';
+
+        tooltipEl.appendChild(table);
+        chart.canvas.parentNode.appendChild(tooltipEl);
+    }
+
+    return tooltipEl;
+};
 
 const externalTooltipHandler = (context) => {
     // Tooltip Element
@@ -270,7 +424,6 @@ const externalTooltipHandler = (context) => {
         offsetLeft: positionX,
         offsetTop: positionY
     } = chart.canvas;
-    // console.log(chart);
     // Display, position, and set styles for font
     tooltipEl.style.opacity = 1;
     tooltipEl.style.left = positionX + tooltip.caretX + 'px';
@@ -281,135 +434,11 @@ const externalTooltipHandler = (context) => {
     // tooltipEl.style.padding = tooltip.options.padding + 'px ' + tooltip.options.padding + 'px';
 };
 
-
-const grad = document.createElement("canvas").getContext('2d');
-let ct = grad.createLinearGradient(0, 0, 0, 400);
-ct.addColorStop(0, 'rgba(138, 43, 226,1)');
-ct.addColorStop(1, 'rgba(138,43,226,0)');
-
-const dataLine = {
-    labels: labels,
-    datasets: [{
-        label: 'Задачи',
-        fill: false,
-        borderColor: 'rgb(138, 43, 226)',
-        backgroundColor: ct,
-        // cubicInterpolationMode: 'monotone',
-        fill: true,
-        tension: 0.4,
-        type: 'line',
-        pointStyle: "circle",
-        pointRadius: 0,
-        pointBorderWidth: 25,
-        pointHoverBorderWidth: 50,
-        pointHoverRadius: 10,
-        pointBackgroundColor: 'rgba(255, 180, 180, 1)',
-        pointBorderColor: 'rgba(255, 255, 255, 0.5)',
-    }]
-};
-
-const myChartLine = new Chart(ctxLine, {
-    type: 'bar',
-    data: dataLine,
-    options: {
-        plugins: {
-            title: {
-                display: true,
-                text: 'Недельная Активность',
-                align: 'start',
-                font: {
-                    size: 30
-                },
-                padding: {
-                    top: 20,
-                    left: 0,
-                    right: 0,
-                    bottom: 50
-
-                }
-            },
-            legend: {
-                display: false,
-
-            },
-            tooltip: {
-                enabled: false,
-                // position: 'nearest',
-                external: externalTooltipHandler
-            }
-
-
-        },
-
-        responsive: true,
-        interaction: {
-            intersect: false,
-            mode: 'index',
-        },
-        scales: {
-            x: {
-
-                stacked: true,
-                grid: {
-                    display: false
-                },
-                ticks: {
-                    // Include a dollar sign in the ticks
-                    callback: function (value, index, values) {
-                        return getNameDay(this.getLabelForValue(value));
-                    }
-                }
-            },
-            y: {
-                display: false,
-                min: -10,
-                max: 100,
-            }
-        }
-    }
-})
-
-const refreshDataLine = (listOfTasks, dateFrom, dateTo) => {
-    myChartLine.data.labels = Task.GetListOfDates(listOfTasks, dateFrom, dateTo);
-    myChartLine.data.datasets[0].data = Task.GetListOfAll(listOfTasks, dateFrom, dateTo);
-    myChartLine.update();
+module.exports = {
+    // getOrCreateTooltip,
+    externalTooltipHandler
 }
-refreshDataLine(listOfTasks, dateFrom, dateTo);
-
-
-let count = 0;
-const triggerTooltip = (chart) => {
-    chart.setActiveElements([{
-        datasetIndex: 0,
-        index: Math.floor(moment(dateTo).diff(dateFrom, "days") / 2) || 0,
-    }, ]);
-
-    chart.tooltip.setActiveElements([{
-        datasetIndex: 0,
-        index: Math.floor(moment(dateTo).diff(dateFrom, "days") / 2) || 0,
-    }, ]);
-    chart.update();
-};
-
-triggerTooltip(myChartLine);
-
-const upd = (chart) => {
-    chart.update();
-}
-
-
-document.querySelector('.chart_line').addEventListener("mouseout", (e) => {
-    upd(myChartLine);
-    triggerTooltip(myChartLine);
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    document.querySelector(".date__day").innerHTML = getNameDay(moment());
-    document.querySelector(".date__today").innerHTML = moment().format("DD MMMM YYYY");
-
-});
-},{"chart.js":2,"flatpickr":3,"flatpickr/dist/l10n/ru.js":4,"moment":6,"moment/locale/ru":5}],2:[function(require,module,exports){
+},{"moment":8,"moment/locale/ru":7}],4:[function(require,module,exports){
 /*!
  * Chart.js v3.7.1
  * https://www.chartjs.org
@@ -13680,7 +13709,7 @@ return Chart;
 
 }));
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /* flatpickr v4.6.11, @license MIT */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -16396,7 +16425,7 @@ return Chart;
 
 })));
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -16473,7 +16502,7 @@ return Chart;
 
 })));
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 //! moment.js locale configuration
 //! locale : Russian [ru]
 //! author : Viktorminator : https://github.com/Viktorminator
@@ -16692,7 +16721,7 @@ return Chart;
 
 })));
 
-},{"../moment":6}],6:[function(require,module,exports){
+},{"../moment":8}],8:[function(require,module,exports){
 //! moment.js
 //! version : 2.29.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
